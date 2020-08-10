@@ -22,23 +22,28 @@ struct Result: Codable {
     var accountKey: String?
     let objectID, uniqueKey, updatedAt: String
     
-
+    
     enum CodingKeys: String, CodingKey {
-      
+        
         case createdAt, firstName, lastName, latitude, longitude, mapString, mediaURL
         case objectID = "objectId"
         case uniqueKey, updatedAt
     }
     
 }
+struct PostedStudentLocation: Codable {
+    let createdAt: String
+    let objectId: String
+    
+}
 
 
 /*extension StudentLocationList {
-    init(mapString: String, mediaURL: String) {
-        self.mapString = mapString
-        self.mediaURL = mediaURL
-    }
-}*/
+ init(mapString: String, mediaURL: String) {
+ self.mapString = mapString
+ self.mediaURL = mediaURL
+ }
+ }*/
 
 enum Param: String {
     case updatedAt

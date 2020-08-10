@@ -16,66 +16,100 @@ class ViewController: UIViewController, UITextFieldDelegate {
         case Success(T)
         case Error(String)
     }
-        var window: UIWindow?
+   
+    var window: UIWindow?
     
-    
-   static var finishedSession : Seession?
+    static var finishedSession : Seession?
     @IBOutlet weak var txtEmail: UITextField!
     
     @IBOutlet weak var txtPassword: UITextField!
     
-
+    
     @IBOutlet weak var singUpButtom: UIButton!
     
-
     override func viewDidLoad() {
         super.viewDidLoad()
-         
+    
         
+
         txtEmail.delegate = self
         txtPassword.delegate = self
+        
+      
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
-        @IBAction func loginUser(_ sender: Any) {
-            
+    @IBAction func loginUser(_ sender: Any) {
+          
         if isValidEmail(txtEmail.text!) == true {
             
             login(email: txtEmail.text!, password: txtPassword.text!) { (response) in
                 switch response {
                 case .Success( _):
                     
-                        DispatchQueue.main.async{
-                           
-                            //pásalo de pantalla
-                            if let tabbar = (self.storyboard?.instantiateViewController(withIdentifier: "miTabBar") as? UITabBarController) {
-                                tabbar.modalPresentationStyle = .fullScreen
-                                self.present(tabbar, animated: true, completion: nil)
-                                
+                    DispatchQueue.main.async{
+                        
+                        //pásalo de pantalla
+                        if let tabbar = (self.storyboard?.instantiateViewController(withIdentifier: "miTabBar") as? UITabBarController) {
+                            tabbar.modalPresentationStyle = .fullScreen
+                            self.present(tabbar, animated: true, completion: nil)
+                            
                         }
                     }
                 case .Error(let error):
-                      DispatchQueue.main.async {
-                                                     
-                                 let alert = UIAlertController(title: "Alert", message: "Invalid credentials", preferredStyle: .alert)
-                         let ok = UIAlertAction(title: "ok", style: .default, handler: nil)
-                         alert.addAction(ok)
-                             self.present(alert, animated: true, completion: nil)
-                                 }
+                    DispatchQueue.main.async {
+                        
+                        let alert = UIAlertController(title: "Alert", message: "Invalid credentials", preferredStyle: .alert)
+                        let ok = UIAlertAction(title: "ok", style: .default, handler: nil)
+                        alert.addAction(ok)
+                        self.present(alert, animated: true, completion: nil)
+                    }
                 }
             }
         } else {
             
-            }
-    }
-                
- 
+        }
         
+        let reachability = Reachability()!
+        
+        reachability.whenReachable = { reachability in
+                if reachability.connection == .wifi{
+                    print("Reachable via wifi")
+                }else{
+                    print("Rechable via cellular ")
+                }
+                
+            }
+            reachability.whenReachable = { _ in
+                print("Not reachable")
+                
+                
+            
+        }
+            do{
+                try reachability.startNotifier()
+            }catch{
+                print("No notification")
+            }
+        }
+        /*func showAlert(){
+            let alert = UIAlertController(title: "Internet Connection", message: "The internet connection appears to be offline", preferredStyle: .alert)
+            alert.addAction(UIAlertAction (title: NSLocalizedString("Ok", comment: "Default Action"), style: .default, handler: {_ in
+             NSLog("The \"ok\" alert ocurred.")
+             
+        }))
+            self.present(alert, animated: true, completion: nil)
+        
+        }*/
+    
+    
+    
+    
     func login(email: String, password: String, completion:@escaping (Result<Seession>)->Void){
-       
+        
         var request = URLRequest(url: URL(string: "https://onthemap-api.udacity.com/v1/session")!)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Accept")
@@ -85,30 +119,34 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
         let session = URLSession.shared
         let task = session.dataTask(with: request) { data, response, error in
-
-               
-                let range = (5..<data!.count)
-                let newData = data?.subdata(in: range) /* subset response data! */
-                print(String(data: newData!, encoding: .utf8)!)
-                
-                                let session = try?  JSONDecoder().decode(Seession.self, from: newData!)
-            
-                
-                               if let successSession = session {
-                                completion(.Success(successSession))
-                                ViewController.self.finishedSession = successSession
-                                
-                               } else {
-                                   completion(.Error(error?.localizedDescription ?? ""))
-                               }
-
+           DispatchQueue.main.async{
+                     if error != nil {
+                    Alerta.showMessage(title: "Alert", msg: error?.localizedDescription ?? "", on: self)
+                return
                 }
-        task.resume()
+            let range = (5..<data!.count)
+            let newData = data?.subdata(in: range) /* subset response data! */
+            print(String(data: newData!, encoding: .utf8)!)
             
+            let session = try?  JSONDecoder().decode(Seession.self, from: newData!)
+            
+            
+            if let successSession = session {
+                completion(.Success(successSession))
+                ViewController.self.finishedSession = successSession
+                
+            } else {
+                completion(.Error(error?.localizedDescription ?? ""))
+            }
             
             }
-
+        }
+        task.resume()
         
+        
+    }
+    
+    
     
     func isValidEmail(_ email: String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
@@ -116,38 +154,38 @@ class ViewController: UIViewController, UITextFieldDelegate {
         let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
         return emailPred.evaluate(with: email)
         
-         }
-  func textFieldDidBeginEditing(_ textField: UITextField) {
-         
-         if textField == txtEmail {
-             txtEmail.text = ""
-             
-         } else if textField == txtPassword {
-             txtPassword.text = ""
-              self.view.frame.origin.y = -150 // Move view 150 points upward
-         }
-  
-     }
-     func textFieldDidEndEditing(_ textField: UITextField) {
-           self.view.frame.origin.y = 0
+    }
+    func textFieldDidBeginEditing(_ textField: UITextField) {
         
+        if textField == txtEmail {
+            txtEmail.text = ""
+            
+        } else if textField == txtPassword {
+            txtPassword.text = ""
+            self.view.frame.origin.y = -150 // Move view 150 points upward
         }
+        
+    }
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.view.frame.origin.y = 0
+        
+    }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
     }
     
-   
+    
     @IBAction func signup(_ sender: Any) {
         guard let url = URL(string: "https://www.udacity.com/account/auth#!/signup") else {
-                   return
-               }
-               UIApplication.shared.open(url, options: [:], completionHandler: nil)
-           }
-    
-        
-     
+            return
+        }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
+    
+
+    
+}
 
 
 

@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5E72153E246DA5FC00279606"
-               BuildableName = "OnTheMap1.0.app"
+               BuildableName = "OnTheMap .app"
                BlueprintName = "OnTheMap1.0"
                ReferencedContainer = "container:OnTheMap1.0.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5E72153E246DA5FC00279606"
-            BuildableName = "OnTheMap1.0.app"
+            BuildableName = "OnTheMap .app"
             BlueprintName = "OnTheMap1.0"
             ReferencedContainer = "container:OnTheMap1.0.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5E72153E246DA5FC00279606"
-            BuildableName = "OnTheMap1.0.app"
+            BuildableName = "OnTheMap .app"
             BlueprintName = "OnTheMap1.0"
             ReferencedContainer = "container:OnTheMap1.0.xcodeproj">
          </BuildableReference>
